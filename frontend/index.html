@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ thống Quản lý Sinh viên</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      text-align: center;
+      padding: 80px 20px;
+    }
+    h1 { color: #1e40af; }
+    button {
+      padding: 12px 24px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    pre {
+      text-align: left;
+      max-width: 600px;
+      margin: 24px auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hệ thống Quản lý Sinh viên</h1>
+  <p>Nginx Reverse Proxy đã phục vụ giao diện thành công.</p>
+
+  <button onclick="testAPI()">Kiểm tra kết nối Backend</button>
+  <pre id="result"></pre>
+
+  <script>
+    async function testAPI() {
+      const result = document.getElementById('result');
+      try {
+        const response = await fetch('/api/health');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        result.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        result.textContent = 'Lỗi: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
