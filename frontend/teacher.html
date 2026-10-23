@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giáo viên | Quản lý sinh viên</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f6fb;
+      color: #23324a;
+    }
+    header {
+      background: #203d68;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h2 { margin: 0; }
+    main {
+      max-width: 1150px;
+      margin: 35px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e1e7f0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    h1 { font-size: 27px; }
+    h3 { margin-top: 0; }
+    select, input, button {
+      padding: 10px 12px;
+      border: 1px solid #ccd7e5;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    select { width: 100%; max-width: 480px; }
+    button {
+      cursor: pointer;
+      background: #2860ba;
+      color: white;
+      border: none;
+    }
+    button:hover { background: #1b4a95; }
+    button:disabled { opacity: .5; cursor: wait; }
+    .logout { background: #fff; color: #203d68; }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 13px;
+      text-align: left;
+      border-bottom: 1px solid #e5eaf1;
+    }
+    th { background: #f3f6fb; }
+    td input { width: 90px; }
+    .message { margin: 12px 0; color: #506580; }
+    .error { color: #b42318; }
+    .success { color: #167347; }
+    .muted { color: #687b95; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Hệ thống Quản lý Sinh viên</h2>
+    <button class="logout" id="logoutBtn">Đăng xuất</button>
+  </header>
+
+  <main id="app" hidden>
+    <h1>Cổng thông tin Giáo viên</h1>
+    <p class="muted" id="welcome"></p>
+
+    <section class="card">
+      <h3>Phân công giảng dạy</h3>
+      <label for="assignment">Chọn lớp và môn học</label>
+      <p>
+        <select id="assignment">
+          <option value="">Đang tải...</option>
+        </select>
+      </p>
+    </section>
+
+    <section class="card">
+      <h3>Danh sách sinh viên và điểm số</h3>
+      <p class="message" id="message"></p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã SV</th>
+              <th>Họ và tên</th>
+              <th>Điểm quá trình</th>
+              <th>Điểm thi</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="students"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const app = document.getElementById('app');
+    const assignmentSelect = document.getElementById('assignment');
+    const studentsBody = document.getElementById('students');
+    const message = document.getElementById('message');
+
+    async function api(url, options = {}) {
+      const response = await fetch(url, {
+        credentials: 'same-origin',
+        ...options
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Có lỗi xảy ra');
+      }
+
+      return result;
+    }
+
+    function showMessage(text, type = '') {
+      message.textContent = text;
+      message.className = 'message ' + type;
+    }
+
+    async function loadStudents() {
+      const assignmentId = assignmentSelect.value;
+      studentsBody.replaceChildren();
+
+      if (!assignmentId) {
+        showMessage('Chưa có phân công giảng dạy.');
+        return;
+      }
+
+      showMessage('Đang tải danh sách sinh viên...');
+
+      try {
+        const result = await api(
+          '/api/teacher/assignments/' +
+          encodeURIComponent(assignmentId) +
+          '/students'
+        );
+
+        if (!result.data.length) {
+          showMessage('Lớp này chưa có sinh viên.');
+          return;
+        }
+
+        showMessage('Có ' + result.data.length + ' sinh viên.');
+
+        for (const student of result.data) {
+          const tr = document.createElement('tr');
+
+          const code = document.createElement('td');
+          code.textContent = student.student_code;
+
+          const name = document.createElement('td');
+          name.textContent = student.full_name;
+
+          function scoreInput(value) {
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '0';
+            input.max = '10';
+            input.step = '0.1';
+            input.placeholder = '0 - 10';
+            input.value = value ?? '';
+            return input;
+          }
+
+          const processInput = scoreInput(student.process_score);
+          const examInput = scoreInput(student.exam_score);
+
+          const processCell = document.createElement('td');
+          processCell.appendChild(processInput);
+
+          const examCell = document.createElement('td');
+          examCell.appendChild(examInput);
+
+          const actionCell = document.createElement('td');
+          const saveButton = document.createElement('button');
+          saveButton.textContent = 'Lưu điểm';
+
+          saveButton.addEventListener('click', async () => {
+            if (
+              processInput.value.trim() === '' ||
+              examInput.value.trim() === ''
+            ) {
+              showMessage('Vui lòng nhập đủ hai cột điểm.', 'error');
+              return;
+            }
+
+            const processScore = Number(processInput.value);
+            const examScore = Number(examInput.value);
+
+            if (
+              !Number.isFinite(processScore) ||
+              !Number.isFinite(examScore) ||
+              processScore < 0 || processScore > 10 ||
+              examScore < 0 || examScore > 10
+            ) {
+              showMessage('Điểm phải từ 0 đến 10.', 'error');
+              return;
+            }
+
+            saveButton.disabled = true;
+
+            try {
+              await api(
+                '/api/teacher/assignments/' +
+                encodeURIComponent(assignmentSelect.value) +
+                '/students/' + student.id + '/grade',
+                {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    process_score: processScore,
+                    exam_score: examScore
+                  })
+                }
+              );
+
+              showMessage(
+                'Đã lưu điểm cho ' + student.full_name,
+                'success'
+              );
+            } catch (error) {
+              showMessage(error.message, 'error');
+            } finally {
+              saveButton.disabled = false;
+            }
+          });
+
+          actionCell.appendChild(saveButton);
+
+          tr.append(
+            code,
+            name,
+            processCell,
+            examCell,
+            actionCell
+          );
+
+          studentsBody.appendChild(tr);
+        }
+      } catch (error) {
+        showMessage(error.message, 'error');
+      }
+    }
+
+    async function initialize() {
+      try {
+        const auth = await api('/api/auth/me');
+
+        if (!auth.user || auth.user.role !== 'teacher') {
+          window.location.replace('/login.html');
+          return;
+        }
+
+        app.hidden = false;
+
+        const result = await api('/api/teacher/assignments');
+
+        if (result.data.length) {
+          document.getElementById('welcome').textContent =
+            'Xin chào, ' + result.data[0].teacher_name;
+        } else {
+          document.getElementById('welcome').textContent =
+            'Tài khoản Giáo viên';
+        }
+
+        assignmentSelect.replaceChildren();
+
+        for (const item of result.data) {
+          const option = document.createElement('option');
+          option.value = item.id;
+          option.textContent =
+            item.class_name + ' — ' + item.subject_name;
+
+          assignmentSelect.appendChild(option);
+        }
+
+        if (result.data.length) {
+          await loadStudents();
+        } else {
+          showMessage('Chưa có môn học được phân công.');
+        }
+      } catch (error) {
+        app.hidden = false;
+        showMessage(error.message, 'error');
+      }
+    }
+
+    assignmentSelect.addEventListener('change', loadStudents);
+
+    document.getElementById('logoutBtn')
+      .addEventListener('click', async () => {
+        try {
+          await api('/api/auth/logout', { method: 'POST' });
+          window.location.replace('/login.html');
+        } catch (error) {
+          showMessage(error.message, 'error');
+        }
+      });
+
+    initialize();
+  </script>
+</body>
+</html>

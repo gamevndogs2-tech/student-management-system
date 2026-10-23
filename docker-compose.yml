@@ -1,5 +1,6 @@
 
 services:
+
   # ============================
   # MySQL Database
   # ============================
@@ -15,7 +16,7 @@ services:
       - mysql_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
-      - backend_network
+      - database_network
     healthcheck:
       test:
         - CMD-SHELL
@@ -39,7 +40,7 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - backend_network
+      - database_network
 
   # ============================
   # Node.js Express Backend
@@ -56,13 +57,19 @@ services:
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_NAME: ${MYSQL_DATABASE}
+
+      # Authentication & Session
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
       mysql:
         condition: service_healthy
     networks:
-      - backend_network
+      - frontend_network
+      - database_network
 
   # ============================
   # Nginx Reverse Proxy + Frontend
@@ -78,7 +85,7 @@ services:
     depends_on:
       - backend
     networks:
-      - backend_network
+      - frontend_network
 
   # ============================
   # Prometheus Monitoring
@@ -94,7 +101,8 @@ services:
     depends_on:
       - backend
     networks:
-      - backend_network
+      - frontend_network
+      - monitoring_network
 
   # ============================
   # Grafana Dashboard
@@ -112,7 +120,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - backend_network
+      - monitoring_network
 
   # ============================
   # Loki - Centralized Logging
@@ -127,7 +135,7 @@ services:
       - ./monitoring/loki/config.yml:/etc/loki/config.yml:ro
       - loki_data:/loki
     networks:
-      - backend_network
+      - monitoring_network
 
   # ============================
   # Alloy - Docker Log Collector
@@ -146,7 +154,7 @@ services:
     depends_on:
       - loki
     networks:
-      - backend_network
+      - monitoring_network
 
 # ============================
 # Persistent Volumes
@@ -159,8 +167,20 @@ volumes:
   alloy_data:
 
 # ============================
-# Docker Networks
+# Docker Network Isolation
 # ============================
 networks:
-  backend_network:
+
+  # Nginx <-> Backend <-> Prometheus
+  frontend_network:
+    driver: bridge
+
+  # MySQL <-> Backend <-> phpMyAdmin
+  # Internal network, isolated from external routing
+  database_network:
+    driver: bridge
+    internal: true
+
+  # Prometheus <-> Grafana / Loki / Alloy
+  monitoring_network:
     driver: bridge

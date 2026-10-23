@@ -1,87 +1,1262 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hệ thống Quản lý Sinh viên</title>
-<style>
-:root{font-family:Arial,Helvetica,sans-serif;color:#243247;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}.layout{display:flex;min-height:100vh}.sidebar{width:235px;background:#203b63;color:white;padding:25px 15px;flex-shrink:0}.sidebar h2{font-size:19px;margin:0 10px 28px}.nav{display:block;width:100%;text-align:left;padding:13px 15px;border:0;border-radius:6px;background:none;color:#dbe7f5;cursor:pointer;margin:5px 0;font-size:14px}.nav.active,.nav:hover{background:#365b8c;color:white}.main{flex:1;min-width:0}.topbar{height:70px;background:white;border-bottom:1px solid #dfe6ef;display:flex;align-items:center;padding:0 30px;justify-content:space-between}.topbar strong{font-size:19px}.topbar span{font-size:13px;color:#718096}.content{padding:28px 30px;max-width:1450px;margin:auto}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.heading h1{font-size:23px;margin:0}.heading p{color:#68778b;margin:7px 0 0;font-size:14px}.card{background:white;border:1px solid #e1e7ef;border-radius:9px;padding:20px;box-shadow:0 2px 8px #203b6309}.toolbar{display:flex;gap:10px;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap}input,select{border:1px solid #cdd7e4;border-radius:5px;padding:10px 11px;font:inherit;font-size:14px;background:white;color:#25344b;min-width:0}input:focus,select:focus{outline:2px solid #a7c7f4;border-color:#3b73bc}.search{width:min(360px,100%)}button{font:inherit;cursor:pointer}.btn{border:1px solid #ccd7e5;background:#fff;color:#243247;padding:9px 14px;border-radius:5px;font-size:14px}.btn.primary{background:#2463ad;color:white;border-color:#2463ad}.btn.danger{color:#ba2931;border-color:#eac3c5}.btn:hover{filter:brightness(.96)}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px;white-space:nowrap}th,td{text-align:left;border-bottom:1px solid #e8edf3;padding:13px 12px}th{background:#f7f9fc;color:#50627a;font-weight:600}td.actions{display:flex;gap:7px}.muted{color:#758398}.message{display:none;padding:12px 14px;border-radius:5px;margin-bottom:16px;background:#e9f5ee;color:#20613e}.message.error{background:#fff0ef;color:#9d2929}.message.show{display:block}.empty{text-align:center;color:#78869a;padding:32px}.modal-backdrop{display:none;position:fixed;inset:0;background:#0c1d33a8;z-index:10;align-items:center;justify-content:center;padding:20px}.modal-backdrop.show{display:flex}.modal{background:white;border-radius:10px;width:min(560px,100%);max-height:90vh;overflow:auto;padding:24px}.modal h2{font-size:20px;margin:0 0 20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}.field.full{grid-column:1/-1}.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}.detail-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.detail-heading h2{margin:0;font-size:19px}.detail-modal{width:min(850px,100%)}.detail-actions{display:flex;gap:7px}.gpa-summary{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.gpa-box{background:#f3f6fa;border:1px solid #e1e7ef;border-radius:7px;padding:13px 17px;min-width:155px}.gpa-box small{display:block;color:#65768b;margin-bottom:7px}.gpa-box strong{font-size:21px;color:#203b63}.hint{font-size:12px;color:#6b7c90;margin-top:14px}@media(max-width:800px){.layout{display:block}.sidebar{width:100%;padding:12px}.sidebar h2{margin:4px 5px 10px}.sidebar nav{display:flex;overflow:auto;gap:6px}.nav{white-space:nowrap;width:auto}.topbar{padding:0 16px}.content{padding:20px 12px}.form-grid{grid-template-columns:1fr}.heading{align-items:flex-start}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hệ thống Quản lý Sinh viên - Admin</title>
+  <style>
+    :root {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #25344b;
+      background: #f3f6fa;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    body.auth-pending .layout { visibility: hidden; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 238px; flex-shrink: 0; background: #203b63;
+      color: white; padding: 25px 15px;
+    }
+    .sidebar h2 { font-size: 19px; margin: 0 10px 28px; }
+    .nav {
+      display: block; width: 100%; text-align: left;
+      padding: 13px 15px; border: 0; border-radius: 6px;
+      background: none; color: #dbe7f5; margin: 5px 0;
+      font-size: 14px;
+    }
+    .nav.active, .nav:hover { background: #365b8c; color: white; }
+    .main { flex: 1; min-width: 0; }
+    .topbar {
+      min-height: 70px; background: white; border-bottom: 1px solid #dfe6ef;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 15px; padding: 14px 30px;
+    }
+    .topbar strong { font-size: 19px; }
+    .account-controls { display: flex; align-items: center; gap: 12px; }
+    .account-name { font-size: 13px; color: #64748b; }
+    .content { padding: 28px 30px; max-width: 1450px; margin: auto; }
+    .heading {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 20px;
+    }
+    .heading h1 { font-size: 23px; margin: 0; }
+    .heading p { color: #68778b; margin: 7px 0 0; font-size: 14px; }
+    .card {
+      background: white; border: 1px solid #e1e7ef;
+      border-radius: 9px; padding: 20px; box-shadow: 0 2px 8px #203b6309;
+    }
+    .toolbar {
+      display: flex; gap: 10px; justify-content: space-between;
+      flex-wrap: wrap; margin-bottom: 16px;
+    }
+    input, select {
+      border: 1px solid #cdd7e4; border-radius: 5px; padding: 10px 11px;
+      font-size: 14px; background: white; color: #25344b; min-width: 0;
+    }
+    input:focus, select:focus {
+      outline: 2px solid #a7c7f4; border-color: #3b73bc;
+    }
+    .search { width: min(360px, 100%); }
+    .btn {
+      border: 1px solid #ccd7e5; background: white; color: #243247;
+      padding: 9px 14px; border-radius: 5px; font-size: 14px;
+    }
+    .btn.primary { background: #2463ad; color: white; border-color: #2463ad; }
+    .btn.danger { color: #ba2931; border-color: #eac3c5; }
+    .btn:hover { filter: brightness(.96); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    th, td { text-align: left; border-bottom: 1px solid #e8edf3; padding: 13px 12px; }
+    th { background: #f7f9fc; color: #50627a; font-weight: 600; }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .muted { color: #758398; }
+    .hint { font-size: 12px; color: #6b7c90; margin-top: 14px; }
+    .message {
+      display: none; padding: 12px 14px; border-radius: 5px;
+      margin-bottom: 16px; background: #e9f5ee; color: #20613e;
+    }
+    .message.show { display: block; }
+    .message.error { background: #fff0ef; color: #9d2929; }
+    .empty { text-align: center; color: #78869a; padding: 32px; }
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; background: #0c1d33a8;
+      z-index: 10; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      background: white; border-radius: 10px; width: min(620px, 100%);
+      max-height: 90vh; overflow: auto; padding: 24px;
+    }
+    .modal.wide { width: min(920px, 100%); }
+    .modal h2 { font-size: 20px; margin: 0 0 20px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+    .field.full { grid-column: 1 / -1; }
+    .field[hidden] { display: none; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+    .gpa-summary { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+    .gpa-box {
+      background: #f3f6fa; border: 1px solid #e1e7ef;
+      border-radius: 7px; padding: 13px 17px; min-width: 155px;
+    }
+    .gpa-box small { display: block; color: #65768b; margin-bottom: 7px; }
+    .gpa-box strong { font-size: 21px; color: #203b63; }
+    .status {
+      display: inline-block; padding: 5px 9px; border-radius: 5px;
+      background: #e8f5ee; color: #20714c; font-size: 12px;
+    }
+    .status.locked { background: #fff0ef; color: #ad3434; }
+    @media(max-width:800px) {
+      .layout { display: block; }
+      .sidebar { width: 100%; padding: 12px; }
+      .sidebar h2 { margin: 4px 5px 10px; }
+      .sidebar nav { display: flex; overflow: auto; gap: 6px; }
+      .nav { white-space: nowrap; width: auto; }
+      .topbar { padding: 12px 16px; flex-wrap: wrap; }
+      .content { padding: 20px 12px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body>
-<div class="layout"><aside class="sidebar"><h2>Quản lý Sinh viên</h2><nav id="navigation"></nav></aside><div class="main"><header class="topbar"><strong>HỆ THỐNG QUẢN LÝ SINH VIÊN</strong><span>Trang quản trị</span></header><main class="content"><div class="heading"><div><h1 id="pageTitle">Sinh viên</h1><p id="pageSubtitle">Quản lý dữ liệu hệ thống</p></div><button class="btn primary" id="addButton">+ Thêm mới</button></div><div class="message" id="message" role="status"></div><section class="card"><div class="toolbar"><input id="search" class="search" type="search" placeholder="Tìm kiếm trong danh sách..."><button class="btn" id="refreshButton">Làm mới</button></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div><p class="hint" id="recordCount"></p></section></main></div></div>
-<div class="modal-backdrop" id="modalBackdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle">Thêm mới</h2><form id="editForm"><div class="form-grid" id="formFields"></div><div class="modal-footer"><button type="button" class="btn" id="cancelButton">Hủy</button><button type="submit" class="btn primary" id="saveButton">Lưu thông tin</button></div></form></div></div>
-<div class="modal-backdrop" id="detailBackdrop"><div class="modal detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><div class="detail-heading"><h2 id="detailTitle">Bảng điểm sinh viên</h2><button class="btn" id="closeDetail">Đóng</button></div><div class="table-wrap"><table><thead><tr><th>Môn học</th><th>Điểm quá trình</th><th>Điểm thi</th><th>Tổng kết</th><th>Điểm chữ</th><th>GPA môn</th><th>Thao tác</th></tr></thead><tbody id="detailBody"></tbody></table></div><div class="gpa-summary" id="gpaSummary"></div><p class="hint">Quy tắc demo: tổng kết = 40% quá trình + 60% thi; quy đổi hệ 4 theo bảng điểm mẫu, GPA trung bình có trọng số tín chỉ. Không thay thế quy chế chính thức của trường.</p><div class="modal-footer"><button class="btn primary" id="addGradeDetail">+ Thêm điểm</button></div></div></div>
+
+<body class="auth-pending">
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Quản lý Sinh viên</h2>
+      <nav id="navigation"></nav>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <strong>HỆ THỐNG QUẢN LÝ SINH VIÊN</strong>
+        <div class="account-controls">
+          <span class="account-name" id="accountName">Đang xác thực...</span>
+          <button class="btn" id="logoutButton">Đăng xuất</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="heading">
+          <div>
+            <h1 id="pageTitle">Sinh viên</h1>
+            <p id="pageSubtitle">Quản lý dữ liệu hệ thống</p>
+          </div>
+          <button class="btn primary" id="addButton">+ Thêm mới</button>
+        </div>
+
+        <div class="message" id="message" role="status"></div>
+
+        <section class="card">
+          <div class="toolbar">
+            <input id="search" class="search" type="search"
+                   placeholder="Tìm kiếm trong danh sách...">
+            <button class="btn" id="refreshButton">Làm mới</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead id="tableHead"></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+          <p class="hint" id="recordCount"></p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2 id="modalTitle">Thêm mới</h2>
+      <form id="editForm">
+        <div class="form-grid" id="formFields"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn" id="cancelButton">Hủy</button>
+          <button type="submit" class="btn primary" id="saveButton">Lưu thông tin</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="detailBackdrop">
+    <div class="modal wide" role="dialog" aria-modal="true">
+      <h2 id="detailTitle">Bảng điểm sinh viên</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Môn học</th><th>Quá trình</th><th>Thi</th>
+              <th>Tổng kết</th><th>Điểm chữ</th><th>GPA</th><th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="detailBody"></tbody>
+        </table>
+      </div>
+      <div class="gpa-summary" id="gpaSummary"></div>
+      <p class="hint">
+        Quy tắc demo: 40% điểm quá trình + 60% điểm thi.
+        GPA tính theo tín chỉ và thang điểm 4 mẫu.
+      </p>
+      <div class="modal-footer">
+        <button class="btn" id="closeDetail">Đóng</button>
+        <button class="btn primary" id="addGradeDetail">+ Thêm điểm</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 'use strict';
-const configs={
- students:{title:'Sinh viên',subtitle:'Danh sách và thông tin sinh viên',api:'/api/students',columns:[['student_code','Mã sinh viên'],['full_name','Họ và tên'],['date_of_birth','Ngày sinh'],['gender','Giới tính'],['email','Email'],['class_name','Lớp']],fields:[['student_code','Mã sinh viên','text',true],['full_name','Họ và tên','text',true],['date_of_birth','Ngày sinh','date'],['gender','Giới tính','gender'],['email','Email','email'],['class_id','Lớp','classes']]},
- classes:{title:'Lớp học',subtitle:'Danh sách các lớp học',api:'/api/classes',columns:[['class_code','Mã lớp'],['class_name','Tên lớp'],['academic_year','Niên khóa']],fields:[['class_code','Mã lớp','text',true],['class_name','Tên lớp','text',true],['academic_year','Niên khóa','text']]},
- subjects:{title:'Môn học',subtitle:'Danh sách các môn học',api:'/api/subjects',columns:[['subject_code','Mã môn'],['subject_name','Tên môn học'],['credits','Số tín chỉ']],fields:[['subject_code','Mã môn','text',true],['subject_name','Tên môn học','text',true],['credits','Số tín chỉ','number',true]]},
- grades:{title:'Điểm số',subtitle:'Kết quả học tập của sinh viên',api:'/api/grades',columns:[['student_code','Mã sinh viên'],['full_name','Họ và tên'],['subject_name','Môn học'],['process_score','Điểm quá trình'],['exam_score','Điểm thi']],fields:[['student_id','Sinh viên','students'],['subject_id','Môn học','subjects'],['process_score','Điểm quá trình','score'],['exam_score','Điểm thi','score']]}
+
+// ========================================
+// CẤU HÌNH CÁC MỤC QUẢN LÝ
+// ========================================
+
+const configs = {
+  students: {
+    title: 'Sinh viên',
+    subtitle: 'Danh sách và thông tin sinh viên',
+    api: '/api/students',
+    columns: [
+      ['student_code', 'Mã sinh viên'],
+      ['full_name', 'Họ và tên'],
+      ['date_of_birth', 'Ngày sinh'],
+      ['gender', 'Giới tính'],
+      ['email', 'Email'],
+      ['class_name', 'Lớp']
+    ],
+    fields: [
+      ['student_code', 'Mã sinh viên', 'text', true],
+      ['full_name', 'Họ và tên', 'text', true],
+      ['date_of_birth', 'Ngày sinh', 'date'],
+      ['gender', 'Giới tính', 'gender'],
+      ['email', 'Email', 'email'],
+      ['class_id', 'Lớp', 'classes']
+    ]
+  },
+
+  classes: {
+    title: 'Lớp học',
+    subtitle: 'Danh sách các lớp học',
+    api: '/api/classes',
+    columns: [
+      ['class_code', 'Mã lớp'],
+      ['class_name', 'Tên lớp'],
+      ['academic_year', 'Niên khóa']
+    ],
+    fields: [
+      ['class_code', 'Mã lớp', 'text', true],
+      ['class_name', 'Tên lớp', 'text', true],
+      ['academic_year', 'Niên khóa', 'text']
+    ]
+  },
+
+  subjects: {
+    title: 'Môn học',
+    subtitle: 'Danh sách các môn học',
+    api: '/api/subjects',
+    columns: [
+      ['subject_code', 'Mã môn'],
+      ['subject_name', 'Tên môn học'],
+      ['credits', 'Số tín chỉ']
+    ],
+    fields: [
+      ['subject_code', 'Mã môn', 'text', true],
+      ['subject_name', 'Tên môn học', 'text', true],
+      ['credits', 'Số tín chỉ', 'number', true]
+    ]
+  },
+
+  grades: {
+    title: 'Điểm số',
+    subtitle: 'Kết quả học tập của sinh viên',
+    api: '/api/grades',
+    columns: [],
+    fields: [
+      ['student_id', 'Sinh viên', 'students', true],
+      ['subject_id', 'Môn học', 'subjects', true],
+      ['process_score', 'Điểm quá trình', 'score'],
+      ['exam_score', 'Điểm thi', 'score']
+    ]
+  },
+
+  accounts: {
+    title: 'Tài khoản',
+    subtitle: 'Cấp và quản lý tài khoản đăng nhập',
+    api: '/api/accounts',
+    columns: [
+      ['username', 'Tên đăng nhập'],
+      ['role', 'Vai trò'],
+      ['student_name', 'Sinh viên'],
+      ['teacher_name', 'Giáo viên'],
+      ['is_active', 'Trạng thái']
+    ],
+    fields: []
+  }
 };
-let active='students',records=[],editingId=null,lookup={classes:[],students:[],subjects:[]};
-const $=id=>document.getElementById(id);
-const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const config=()=>configs[active];
-function notify(text,error=false){const el=$('message');el.textContent=text;el.className='message show'+(error?' error':'');}
-async function request(url,options={}){let response;try{response=await fetch(url,options)}catch{throw new Error('Không kết nối được máy chủ.')}let data;try{data=await response.json()}catch{throw new Error('Máy chủ trả về dữ liệu không hợp lệ.')}if(!response.ok||data.success===false)throw new Error(data.message||`Lỗi HTTP ${response.status}`);return data;}
-function extract(data){return Array.isArray(data)?data:Array.isArray(data.data)?data.data:[];}
-async function loadLookup(key){if(lookup[key].length)return lookup[key];const data=await request(configs[key].api);lookup[key]=extract(data);return lookup[key];}
-function nav(){const labels={students:'Sinh viên',classes:'Lớp học',subjects:'Môn học',grades:'Điểm số'};$('navigation').innerHTML=Object.entries(labels).map(([key,label])=>`<button class="nav ${active===key?'active':''}" data-key="${key}">${label}</button>`).join('');document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>switchTab(b.dataset.key));}
-async function switchTab(key){active=key;$('message').className='message';$('search').value='';$('pageTitle').textContent=config().title;$('pageSubtitle').textContent=config().subtitle;nav();await load();}
-function formatValue(key,value){if(value===null||value===undefined||value==='')return '—';if(key==='date_of_birth'){const date=new Date(value);return Number.isNaN(date.getTime())?String(value):date.toLocaleDateString('vi-VN',{timeZone:'UTC'});}return String(value);}
-function render(){
- if(active==='grades'){renderGradeStudents();return;}
- const {columns}=config();$('tableHead').innerHTML='<tr>'+columns.map(([,label])=>`<th>${escapeHTML(label)}</th>`).join('')+'<th>Thao tác</th></tr>';
- const term=$('search').value.trim().toLocaleLowerCase('vi');const filtered=records.filter(item=>Object.values(item).some(v=>String(v??'').toLocaleLowerCase('vi').includes(term)));
- $('tableBody').innerHTML=filtered.length?filtered.map(item=>'<tr>'+columns.map(([key])=>`<td>${escapeHTML(formatValue(key,item[key]))}</td>`).join('')+`<td class="actions"><button class="btn" data-edit="${item.id}">Sửa</button><button class="btn danger" data-delete="${item.id}">Xóa</button></td></tr>`).join(''):`<tr><td class="empty" colspan="${columns.length+1}">Không có dữ liệu phù hợp</td></tr>`;
- $('recordCount').textContent=`Hiển thị ${filtered.length}/${records.length} bản ghi`;
- document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openForm(Number(b.dataset.edit)));
- document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>deleteRecord(Number(b.dataset.delete)));
+
+const $ = id => document.getElementById(id);
+
+const escapeHTML = value =>
+  String(value ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+
+let active = 'students';
+let records = [];
+let editingId = null;
+let selectedGradeStudent = null;
+let lookup = { classes: [], students: [], subjects: [] };
+let accountTeachers = [];
+let currentUser = null;
+let loadVersion = 0;
+
+const config = () => configs[active];
+
+function notify(message, error = false) {
+  const el = $('message');
+  el.textContent = message;
+  el.className = 'message show' + (error ? ' error' : '');
 }
-function renderGradeStudents(){
- const grouped=new Map();
- for(const grade of records){const id=Number(grade.student_id);if(!grouped.has(id))grouped.set(id,{id,code:grade.student_code,name:grade.full_name,grades:[]});grouped.get(id).grades.push(grade);}
- const students=[...grouped.values()].sort((a,b)=>String(a.code).localeCompare(String(b.code),'vi'));
- const term=$('search').value.trim().toLocaleLowerCase('vi');const filtered=students.filter(s=>[s.code,s.name,...s.grades.map(g=>g.subject_name)].some(v=>String(v??'').toLocaleLowerCase('vi').includes(term)));
- $('tableHead').innerHTML='<tr><th>Mã sinh viên</th><th>Họ và tên</th><th>Số môn có điểm</th><th>Thao tác</th></tr>';
- $('tableBody').innerHTML=filtered.length?filtered.map(s=>`<tr><td>${escapeHTML(s.code)}</td><td>${escapeHTML(s.name)}</td><td>${s.grades.length}</td><td><button class="btn primary" data-view-student="${s.id}">Xem điểm</button></td></tr>`).join(''):'<tr><td class="empty" colspan="4">Không có dữ liệu phù hợp</td></tr>';
- $('recordCount').textContent=`Hiển thị ${filtered.length}/${students.length} sinh viên có điểm (${records.length} bản ghi điểm)`;
- document.querySelectorAll('[data-view-student]').forEach(b=>b.onclick=async()=>{try{await loadLookup('subjects');showStudentGrades(Number(b.dataset.viewStudent));}catch(e){notify('Không tải được tín chỉ môn học: '+e.message,true);}});
+
+function clearNotice() {
+  $('message').className = 'message';
+  $('message').textContent = '';
 }
-// Quy đổi GPA dùng cho mục đích minh họa, không phải quy chế chính thức.
-function gradeResult(g){
- const process=Number(g.process_score),exam=Number(g.exam_score);
- if(g.process_score==null||g.exam_score==null||!Number.isFinite(process)||!Number.isFinite(exam))return null;
- const total=process*.4+exam*.6;
- const rounded=Math.round((total+Number.EPSILON)*100)/100;
- const bands=[[8.5,'A',4],[8,'B+',3.5],[7,'B',3],[6.5,'C+',2.5],[5.5,'C',2],[5,'D+',1.5],[4,'D',1],[0,'F',0]];
- const band=bands.find(([min])=>rounded>=min);
- return {total:rounded,letter:band[1],gpa:band[2]};
+
+function goToLogin() {
+  location.replace('/login.html');
 }
-let selectedGradeStudent=null;
-function showStudentGrades(studentId){
- selectedGradeStudent=studentId;
- const grades=records.filter(g=>Number(g.student_id)===studentId);
- if(!grades.length)return;
- $('detailTitle').textContent=`Bảng điểm — ${grades[0].full_name} (${grades[0].student_code})`;
- const calculated=grades.map(g=>({grade:g,result:gradeResult(g),subject:lookup.subjects.find(s=>Number(s.id)===Number(g.subject_id))}));
- $('detailBody').innerHTML=calculated.map(({grade:g,result:r})=>`<tr><td>${escapeHTML(g.subject_name)}</td><td>${escapeHTML(formatValue('process_score',g.process_score))}</td><td>${escapeHTML(formatValue('exam_score',g.exam_score))}</td><td>${r?r.total.toFixed(2):'—'}</td><td>${r?r.letter:'—'}</td><td>${r?r.gpa.toFixed(2):'—'}</td><td><div class="detail-actions"><button class="btn" data-grade-edit="${g.id}">Sửa</button><button class="btn danger" data-grade-delete="${g.id}">Xóa</button></div></td></tr>`).join('');
- let credits=0,weightedGpa=0,weightedTotal=0;
- for(const {result:r,subject} of calculated){const c=Number(subject?.credits);if(r&&Number.isFinite(c)&&c>0){credits+=c;weightedGpa+=r.gpa*c;weightedTotal+=r.total*c;}}
- $('gpaSummary').innerHTML=`<div class="gpa-box"><small>Điểm trung bình hệ 10</small><strong>${credits?(weightedTotal/credits).toFixed(2):'—'}</strong></div><div class="gpa-box"><small>GPA hệ 4</small><strong>${credits?(weightedGpa/credits).toFixed(2):'—'} / 4.00</strong></div><div class="gpa-box"><small>Tín chỉ đã tính</small><strong>${credits}</strong></div>`;
- $('detailBackdrop').classList.add('show');
- document.querySelectorAll('[data-grade-edit]').forEach(b=>b.onclick=()=>{closeDetail();openForm(Number(b.dataset.gradeEdit));});
- document.querySelectorAll('[data-grade-delete]').forEach(b=>b.onclick=async()=>{closeDetail();await deleteRecord(Number(b.dataset.gradeDelete));});
+
+async function request(url, options = {}) {
+  let response;
+
+  try {
+    response = await fetch(url, {
+      credentials: 'same-origin',
+      cache: 'no-store',
+      ...options
+    });
+  } catch {
+    throw new Error('Không kết nối được máy chủ.');
+  }
+
+  if (response.status === 401) {
+    goToLogin();
+    throw new Error('Vui lòng đăng nhập lại.');
+  }
+
+  if (response.status === 403) {
+    throw new Error('Bạn không có quyền thực hiện thao tác này.');
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error('Máy chủ trả về dữ liệu không hợp lệ.');
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || 'Có lỗi xảy ra.');
+  }
+
+  return data;
 }
-function closeDetail(){$('detailBackdrop').classList.remove('show');}
-async function load(){try{const data=await request(config().api);records=extract(data);render();}catch(error){records=[];render();notify(error.message,true);}}
-function optionsFor(type){if(type==='gender')return [['Nam','Nam'],['Nữ','Nữ'],['Khác','Khác']];if(type==='classes')return lookup.classes.map(x=>[x.id,`${x.class_code} - ${x.class_name}`]);if(type==='students')return lookup.students.map(x=>[x.id,`${x.student_code} - ${x.full_name}`]);if(type==='subjects')return lookup.subjects.map(x=>[x.id,`${x.subject_code} - ${x.subject_name}`]);return [];}
-function normalizeDate(value){if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?String(value).slice(0,10):d.toISOString().slice(0,10);}
-async function openForm(id=null){editingId=id;const item=records.find(x=>x.id===id)||{};try{const types=config().fields.map(f=>f[2]).filter(t=>['classes','students','subjects'].includes(t));await Promise.all(types.map(loadLookup));}catch(e){notify('Không tải được dữ liệu lựa chọn: '+e.message,true);return;}$('modalTitle').textContent=(id?'Cập nhật ':'Thêm ')+config().title.toLowerCase();$('formFields').innerHTML=config().fields.map(([key,label,type,required])=>{let val=item[key]??'';if(type==='date')val=normalizeDate(val);let control;if(['gender','classes','students','subjects'].includes(type)){const opts=optionsFor(type);control=`<select name="${key}" ${required?'required':''}><option value="">-- Chọn ${escapeHTML(label.toLowerCase())} --</option>${opts.map(([v,text])=>`<option value="${escapeHTML(v)}" ${String(v)===String(val)?'selected':''}>${escapeHTML(text)}</option>`).join('')}</select>`;}else{control=`<input name="${key}" type="${type==='score'?'number':type}" value="${escapeHTML(val)}" ${required?'required':''} ${type==='score'?'min="0" max="10" step="0.01"':type==='number'?'min="1" step="1"':''}>`;}return `<label class="field">${escapeHTML(label)}${control}</label>`;}).join('');$('modalBackdrop').classList.add('show');}
-function closeForm(){$('modalBackdrop').classList.remove('show');}
-async function saveRecord(event){event.preventDefault();const payload={};for(const [key,,type] of config().fields){const value=new FormData($('editForm')).get(key);payload[key]=value===''?null:['classes','students','subjects','number','score'].includes(type)?Number(value):value;}$('saveButton').disabled=true;try{await request(config().api+(editingId?'/'+editingId:''),{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});closeForm();lookup={classes:[],students:[],subjects:[]};await load();notify(editingId?'Cập nhật thành công.':'Thêm mới thành công.');}catch(e){notify(e.message,true);closeForm();}finally{$('saveButton').disabled=false;}}
-async function deleteRecord(id){if(!confirm('Bạn có chắc chắn muốn xóa bản ghi này? Dữ liệu liên quan có thể bị ảnh hưởng.'))return;try{await request(config().api+'/'+id,{method:'DELETE'});lookup={classes:[],students:[],subjects:[]};await load();notify('Xóa thành công.');}catch(e){notify(e.message,true);}}
-$('closeDetail').onclick=closeDetail;$('detailBackdrop').onclick=e=>{if(e.target===$('detailBackdrop'))closeDetail();};$('addGradeDetail').onclick=async()=>{const studentId=selectedGradeStudent;closeDetail();await openForm();const select=$('formFields').querySelector('[name=student_id]');if(select&&studentId!==null)select.value=String(studentId);};$('search').addEventListener('input',render);$('refreshButton').onclick=load;$('addButton').onclick=()=>openForm();$('cancelButton').onclick=closeForm;$('modalBackdrop').onclick=e=>{if(e.target===$('modalBackdrop'))closeForm();};$('editForm').onsubmit=saveRecord;document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeForm();closeDetail();}});switchTab('students');
+
+function extract(result) {
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+// ========================================
+// XÁC THỰC ADMIN
+// ========================================
+
+async function initializeAdmin() {
+  try {
+    const result = await request('/api/auth/me');
+
+    if (!result.user || result.user.role !== 'admin') {
+      goToLogin();
+      return;
+    }
+
+    currentUser = result.user;
+    $('accountName').textContent =
+      'Quản trị viên: ' + result.user.username;
+
+    document.body.classList.remove('auth-pending');
+    await switchTab('students');
+
+  } catch (error) {
+    document.body.classList.remove('auth-pending');
+    notify(error.message, true);
+  }
+}
+
+async function logout() {
+  try {
+    await request('/api/auth/logout', { method: 'POST' });
+    goToLogin();
+  } catch (error) {
+    notify(error.message, true);
+  }
+}
+
+// ========================================
+// ĐIỀU HƯỚNG
+// ========================================
+
+function nav() {
+  const labels = {
+    students: 'Sinh viên',
+    classes: 'Lớp học',
+    subjects: 'Môn học',
+    grades: 'Điểm số',
+    accounts: 'Tài khoản'
+  };
+
+  $('navigation').innerHTML = Object.entries(labels)
+    .map(([key, label]) => `
+      <button class="nav ${active === key ? 'active' : ''}"
+              data-key="${key}">
+        ${label}
+      </button>
+    `).join('');
+
+  document.querySelectorAll('.nav').forEach(button => {
+    button.onclick = () => switchTab(button.dataset.key);
+  });
+}
+
+async function switchTab(tab) {
+  active = tab;
+  records = [];
+  clearNotice();
+
+  $('search').value = '';
+  $('pageTitle').textContent = config().title;
+  $('pageSubtitle').textContent = config().subtitle;
+  $('addButton').textContent =
+    active === 'accounts' ? '+ Cấp tài khoản' :
+    active === 'grades' ? '+ Thêm điểm' : '+ Thêm mới';
+
+  nav();
+  await load();
+}
+
+// ========================================
+// TẢI VÀ HIỂN THỊ DỮ LIỆU
+// ========================================
+
+async function load() {
+  const version = ++loadVersion;
+  const tab = active;
+
+  $('tableBody').innerHTML =
+    '<tr><td class="empty">Đang tải dữ liệu...</td></tr>';
+
+  try {
+    const result = await request(config().api);
+
+    if (version !== loadVersion || tab !== active) return;
+
+    records = extract(result);
+    render();
+
+  } catch (error) {
+    if (version !== loadVersion) return;
+    notify(error.message, true);
+    $('tableBody').innerHTML =
+      '<tr><td class="empty">Không tải được dữ liệu.</td></tr>';
+  }
+}
+
+function formatDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? String(value) :
+    date.toLocaleDateString('vi-VN', { timeZone: 'UTC' });
+}
+
+function displayValue(item, key) {
+  if (key === 'date_of_birth') return formatDate(item[key]);
+  if (item[key] == null || item[key] === '') return '—';
+  return item[key];
+}
+
+function render() {
+  if (active === 'accounts') return renderAccounts();
+  if (active === 'grades') return renderGrades();
+
+  const columns = config().columns;
+  const term = $('search').value.trim().toLowerCase();
+
+  const filtered = records.filter(item =>
+    Object.values(item).some(value =>
+      String(value ?? '').toLowerCase().includes(term)
+    )
+  );
+
+  $('tableHead').innerHTML = '<tr>' +
+    columns.map(([, title]) => `<th>${escapeHTML(title)}</th>`).join('') +
+    '<th>Thao tác</th></tr>';
+
+  $('tableBody').innerHTML = filtered.length
+    ? filtered.map(item => `
+      <tr>
+        ${columns.map(([key]) =>
+          `<td>${escapeHTML(displayValue(item, key))}</td>`
+        ).join('')}
+        <td>
+          <div class="actions">
+            <button class="btn" data-edit="${item.id}">Sửa</button>
+            <button class="btn danger" data-delete="${item.id}">Xóa</button>
+          </div>
+        </td>
+      </tr>
+    `).join('')
+    : `<tr><td colspan="${columns.length + 1}" class="empty">
+         Không có dữ liệu phù hợp
+       </td></tr>`;
+
+  $('recordCount').textContent =
+    `Hiển thị ${filtered.length}/${records.length} bản ghi`;
+
+  bindRowActions();
+}
+
+function bindRowActions() {
+  document.querySelectorAll('[data-edit]').forEach(button => {
+    button.onclick = () => openForm(Number(button.dataset.edit));
+  });
+
+  document.querySelectorAll('[data-delete]').forEach(button => {
+    button.onclick = () => deleteRecord(Number(button.dataset.delete));
+  });
+}
+
+// ========================================
+// FORM CRUD CHUNG
+// ========================================
+
+async function loadLookups() {
+  const needs = active === 'students' ? ['classes'] :
+    active === 'grades' ? ['students', 'subjects'] : [];
+
+  await Promise.all(needs.map(async key => {
+    const result = await request('/api/' + key);
+    lookup[key] = extract(result);
+  }));
+}
+
+function optionsFor(type) {
+  if (type === 'gender') {
+    return [
+      ['Nam', 'Nam'],
+      ['Nữ', 'Nữ'],
+      ['Khác', 'Khác']
+    ];
+  }
+
+  const source = lookup[type] || [];
+
+  return source.map(item => {
+    if (type === 'classes') {
+      return [item.id, `${item.class_code} — ${item.class_name}`];
+    }
+    if (type === 'students') {
+      return [item.id, `${item.student_code} — ${item.full_name}`];
+    }
+    return [item.id, `${item.subject_code} — ${item.subject_name}`];
+  });
+}
+
+function makeField(key, label, type, required, value) {
+  const val = value ?? '';
+  const selectTypes = ['gender', 'classes', 'students', 'subjects'];
+
+  if (selectTypes.includes(type)) {
+    const options = optionsFor(type);
+
+    return `
+      <label class="field">
+        ${escapeHTML(label)}
+        <select name="${key}" ${required ? 'required' : ''}>
+          <option value="">-- Chọn ${escapeHTML(label)} --</option>
+          ${options.map(([id, text]) => `
+            <option value="${escapeHTML(id)}"
+              ${String(id) === String(val) ? 'selected' : ''}>
+              ${escapeHTML(text)}
+            </option>
+          `).join('')}
+        </select>
+      </label>
+    `;
+  }
+
+  const inputType = type === 'score' ? 'number' : type;
+  const formatted = type === 'date' && val
+    ? String(val).slice(0, 10) : val;
+
+  return `
+    <label class="field">
+      ${escapeHTML(label)}
+      <input name="${key}" type="${inputType}"
+        value="${escapeHTML(formatted)}"
+        ${required ? 'required' : ''}
+        ${type === 'score' ? 'min="0" max="10" step="0.01"' : ''}
+        ${type === 'number' ? 'min="1" step="1"' : ''}>
+    </label>
+  `;
+}
+
+async function openForm(id = null) {
+  if (active === 'accounts') return openAccountForm(id);
+
+  editingId = id;
+  const item = records.find(row => Number(row.id) === Number(id)) || {};
+
+  try {
+    await loadLookups();
+  } catch (error) {
+    notify(error.message, true);
+    return;
+  }
+
+  $('modalTitle').textContent = id
+    ? 'Cập nhật ' + config().title.toLowerCase()
+    : 'Thêm ' + config().title.toLowerCase();
+
+  $('formFields').innerHTML = config().fields
+    .map(([key, label, type, required]) =>
+      makeField(key, label, type, required, item[key])
+    ).join('');
+
+  $('saveButton').style.display = '';
+  $('modalBackdrop').classList.add('show');
+}
+
+function closeForm() {
+  $('modalBackdrop').classList.remove('show');
+  $('saveButton').style.display = '';
+  $('editForm').reset();
+}
+
+async function saveRecord(event) {
+  event.preventDefault();
+
+  if (active === 'accounts') return saveAccount();
+
+  const form = new FormData($('editForm'));
+  const payload = {};
+
+  for (const [key, , type] of config().fields) {
+    const value = form.get(key);
+
+    payload[key] = value === '' ? null :
+      ['classes', 'students', 'subjects', 'number', 'score'].includes(type)
+        ? Number(value) : value;
+  }
+
+  $('saveButton').disabled = true;
+
+  try {
+    const wasEditing = Boolean(editingId);
+
+    await request(
+      config().api + (editingId ? '/' + editingId : ''),
+      {
+        method: editingId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    closeForm();
+    await load();
+    notify(wasEditing ? 'Cập nhật thành công.' : 'Thêm mới thành công.');
+
+  } catch (error) {
+    notify(error.message, true);
+  } finally {
+    $('saveButton').disabled = false;
+  }
+}
+
+async function deleteRecord(id) {
+  if (active === 'accounts') return deleteAccount(id);
+
+  if (!confirm('Bạn chắc chắn muốn xóa bản ghi này?')) return;
+
+  try {
+    await request(`${config().api}/${id}`, { method: 'DELETE' });
+    await load();
+    notify('Xóa thành công.');
+  } catch (error) {
+    notify(error.message, true);
+  }
+}
+
+// ========================================
+// QUẢN LÝ ĐIỂM SỐ VÀ GPA
+// ========================================
+
+function finalScore(process, exam) {
+  if (process == null || exam == null) return null;
+  return Number(process) * .4 + Number(exam) * .6;
+}
+
+function convertGPA(score) {
+  if (score == null) return { letter: '—', point: null };
+  if (score >= 8.5) return { letter: 'A', point: 4 };
+  if (score >= 8) return { letter: 'B+', point: 3.5 };
+  if (score >= 7) return { letter: 'B', point: 3 };
+  if (score >= 6.5) return { letter: 'C+', point: 2.5 };
+  if (score >= 5.5) return { letter: 'C', point: 2 };
+  if (score >= 5) return { letter: 'D+', point: 1.5 };
+  if (score >= 4) return { letter: 'D', point: 1 };
+  return { letter: 'F', point: 0 };
+}
+
+function scoreText(value) {
+  return value == null ? '—' : Number(value).toFixed(2);
+}
+
+function renderGrades() {
+  const term = $('search').value.trim().toLowerCase();
+  const students = new Map();
+
+  records.forEach(grade => {
+    const id = grade.student_id;
+    if (!students.has(id)) {
+      students.set(id, {
+        id,
+        student_code: grade.student_code,
+        full_name: grade.full_name,
+        grades: []
+      });
+    }
+    students.get(id).grades.push(grade);
+  });
+
+  const filtered = [...students.values()].filter(student =>
+    `${student.student_code} ${student.full_name}`
+      .toLowerCase().includes(term)
+  );
+
+  $('tableHead').innerHTML = `
+    <tr>
+      <th>Mã sinh viên</th>
+      <th>Họ và tên</th>
+      <th>Số môn có điểm</th>
+      <th>GPA hệ 4</th>
+      <th>Thao tác</th>
+    </tr>
+  `;
+
+  $('tableBody').innerHTML = filtered.length
+    ? filtered.map(student => {
+      let weighted = 0, credits = 0;
+
+      student.grades.forEach(grade => {
+        const score = finalScore(grade.process_score, grade.exam_score);
+        if (score == null) return;
+        const c = Number(grade.credits) || 0;
+        weighted += convertGPA(score).point * c;
+        credits += c;
+      });
+
+      return `
+        <tr>
+          <td>${escapeHTML(student.student_code)}</td>
+          <td>${escapeHTML(student.full_name)}</td>
+          <td>${student.grades.length}</td>
+          <td>${credits ? (weighted / credits).toFixed(2) : '—'}</td>
+          <td>
+            <button class="btn" data-detail="${student.id}">
+              Xem bảng điểm
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('')
+    : '<tr><td colspan="5" class="empty">Chưa có điểm phù hợp</td></tr>';
+
+  $('recordCount').textContent =
+    `Hiển thị ${filtered.length} sinh viên có điểm`;
+
+  document.querySelectorAll('[data-detail]').forEach(button => {
+    button.onclick = () => openGradeDetail(Number(button.dataset.detail));
+  });
+}
+
+function openGradeDetail(studentId) {
+  selectedGradeStudent = studentId;
+
+  const grades = records.filter(
+    item => Number(item.student_id) === studentId
+  );
+
+  const student = grades[0];
+  if (!student) return;
+
+  $('detailTitle').textContent =
+    `Bảng điểm: ${student.student_code} — ${student.full_name}`;
+
+  let weighted = 0, totalCredits = 0;
+  let weightedTen = 0;
+
+  $('detailBody').innerHTML = grades.map(grade => {
+    const score = finalScore(grade.process_score, grade.exam_score);
+    const converted = convertGPA(score);
+    const credits = Number(grade.credits) || 0;
+
+    if (score != null) {
+      weighted += converted.point * credits;
+      weightedTen += score * credits;
+      totalCredits += credits;
+    }
+
+    return `
+      <tr>
+        <td>${escapeHTML(grade.subject_name)}</td>
+        <td>${scoreText(grade.process_score)}</td>
+        <td>${scoreText(grade.exam_score)}</td>
+        <td>${scoreText(score)}</td>
+        <td>${converted.letter}</td>
+        <td>${scoreText(converted.point)}</td>
+        <td>
+          <div class="actions">
+            <button class="btn" data-grade-edit="${grade.id}">Sửa</button>
+            <button class="btn danger" data-grade-delete="${grade.id}">Xóa</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  $('gpaSummary').innerHTML = `
+    <div class="gpa-box">
+      <small>Trung bình hệ 10</small>
+      <strong>${totalCredits ? (weightedTen / totalCredits).toFixed(2) : '—'}</strong>
+    </div>
+    <div class="gpa-box">
+      <small>GPA hệ 4</small>
+      <strong>${totalCredits ? (weighted / totalCredits).toFixed(2) : '—'}</strong>
+    </div>
+    <div class="gpa-box">
+      <small>Tín chỉ đã tính</small>
+      <strong>${totalCredits}</strong>
+    </div>
+  `;
+
+  document.querySelectorAll('[data-grade-edit]').forEach(button => {
+    button.onclick = async () => {
+      closeDetail();
+      await openForm(Number(button.dataset.gradeEdit));
+    };
+  });
+
+  document.querySelectorAll('[data-grade-delete]').forEach(button => {
+    button.onclick = async () => {
+      await deleteRecord(Number(button.dataset.gradeDelete));
+      closeDetail();
+    };
+  });
+
+  $('detailBackdrop').classList.add('show');
+}
+
+function closeDetail() {
+  $('detailBackdrop').classList.remove('show');
+}
+
+// ========================================
+// QUẢN LÝ TÀI KHOẢN ADMIN
+// ========================================
+
+function roleName(role) {
+  return {
+    admin: 'Quản trị viên',
+    teacher: 'Giáo viên',
+    student: 'Sinh viên'
+  }[role] || role;
+}
+
+function renderAccounts() {
+  const term = $('search').value.trim().toLowerCase();
+
+  const filtered = records.filter(item =>
+    [item.username, item.role, item.student_name, item.teacher_name]
+      .some(value => String(value ?? '').toLowerCase().includes(term))
+  );
+
+  $('tableHead').innerHTML = `
+    <tr>
+      <th>Tên đăng nhập</th>
+      <th>Vai trò</th>
+      <th>Sinh viên</th>
+      <th>Giáo viên</th>
+      <th>Trạng thái</th>
+      <th>Thao tác</th>
+    </tr>
+  `;
+
+  $('tableBody').innerHTML = filtered.length
+    ? filtered.map(item => {
+      const enabled = Number(item.is_active) === 1;
+      const self = Number(item.id) === Number(currentUser.id);
+
+      return `
+        <tr>
+          <td><strong>${escapeHTML(item.username)}</strong></td>
+          <td>${escapeHTML(roleName(item.role))}</td>
+          <td>${escapeHTML(item.student_name || '—')}</td>
+          <td>${escapeHTML(item.teacher_name || '—')}</td>
+          <td>
+            <span class="status ${enabled ? '' : 'locked'}">
+              ${enabled ? 'Hoạt động' : 'Đã khóa'}
+            </span>
+          </td>
+          <td>
+            <div class="actions">
+              <button class="btn" data-edit="${item.id}">Sửa</button>
+              <button class="btn" data-reset="${item.id}">Đặt lại MK</button>
+              <button class="btn" data-status="${item.id}"
+                      ${self ? 'disabled' : ''}>
+                ${enabled ? 'Khóa' : 'Mở khóa'}
+              </button>
+              <button class="btn danger" data-delete="${item.id}"
+                      ${self ? 'disabled' : ''}>Xóa</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('')
+    : '<tr><td colspan="6" class="empty">Không có tài khoản phù hợp</td></tr>';
+
+  $('recordCount').textContent =
+    `Hiển thị ${filtered.length}/${records.length} tài khoản`;
+
+  bindRowActions();
+
+  document.querySelectorAll('[data-reset]').forEach(button => {
+    button.onclick = () => resetAccountPassword(Number(button.dataset.reset));
+  });
+
+  document.querySelectorAll('[data-status]').forEach(button => {
+    button.onclick = () => toggleAccount(Number(button.dataset.status));
+  });
+}
+
+function accountSelect(name, items, value, placeholder) {
+  return `
+    <select name="${name}">
+      <option value="">${escapeHTML(placeholder)}</option>
+      ${items.map(item => `
+        <option value="${item.id}"
+          ${String(item.id) === String(value) ? 'selected' : ''}>
+          ${escapeHTML(item.label)}
+        </option>
+      `).join('')}
+    </select>
+  `;
+}
+
+function syncAccountFields() {
+  const role = $('formFields').querySelector('[name=role]')?.value;
+  const student = $('formFields').querySelector('#accountStudentField');
+  const teacher = $('formFields').querySelector('#accountTeacherField');
+
+  if (student) student.hidden = role !== 'student';
+  if (teacher) teacher.hidden = role !== 'teacher';
+}
+
+async function openAccountForm(id = null) {
+  editingId = id;
+  const item = records.find(row => Number(row.id) === Number(id)) || {};
+
+  try {
+    const [students, teachers] = await Promise.all([
+      request('/api/students'),
+      request('/api/accounts/teachers')
+    ]);
+
+    lookup.students = extract(students);
+    accountTeachers = extract(teachers);
+
+  } catch (error) {
+    notify('Không tải được hồ sơ: ' + error.message, true);
+    return;
+  }
+
+  const studentItems = lookup.students.map(item => ({
+    id: item.id,
+    label: `${item.student_code} — ${item.full_name}`
+  }));
+
+  const teacherItems = accountTeachers.map(item => ({
+    id: item.id,
+    label: `${item.teacher_code} — ${item.full_name}`
+  }));
+
+  $('modalTitle').textContent =
+    id ? 'Sửa tài khoản' : 'Cấp tài khoản mới';
+
+  $('formFields').innerHTML = `
+    <label class="field full">
+      Tên đăng nhập
+      <input name="username" required maxlength="50"
+             autocomplete="off" value="${escapeHTML(item.username || '')}">
+    </label>
+
+    <label class="field">
+      Vai trò
+      <select name="role" required>
+        <option value="admin" ${item.role === 'admin' ? 'selected' : ''}>
+          Quản trị viên
+        </option>
+        <option value="teacher" ${item.role === 'teacher' ? 'selected' : ''}>
+          Giáo viên
+        </option>
+        <option value="student"
+          ${(!id || item.role === 'student') ? 'selected' : ''}>
+          Sinh viên
+        </option>
+      </select>
+    </label>
+
+    <label class="field" id="accountStudentField">
+      Hồ sơ sinh viên
+      ${accountSelect('student_id', studentItems, item.student_id,
+        '-- Chọn sinh viên --')}
+    </label>
+
+    <label class="field" id="accountTeacherField">
+      Hồ sơ giáo viên
+      ${accountSelect('teacher_id', teacherItems, item.teacher_id,
+        '-- Chọn giáo viên --')}
+    </label>
+
+    ${id ? '' : `
+      <label class="field full">
+        Mật khẩu ban đầu
+        <input name="password" type="password" minlength="8"
+               autocomplete="new-password"
+               placeholder="Để trống để tự tạo mật khẩu">
+      </label>
+    `}
+
+    <p class="hint" style="grid-column:1/-1">
+      ${id
+        ? 'Để thay đổi mật khẩu, dùng nút Đặt lại MK trong danh sách.'
+        : 'Mật khẩu được hiển thị một lần sau khi cấp tài khoản.'}
+    </p>
+  `;
+
+  $('formFields').querySelector('[name=role]')
+    .addEventListener('change', syncAccountFields);
+
+  syncAccountFields();
+
+  $('saveButton').style.display = '';
+  $('modalBackdrop').classList.add('show');
+}
+
+function showIssuedPassword(username, password) {
+  $('modalTitle').textContent = 'Thông tin cấp tài khoản';
+
+  $('formFields').innerHTML = `
+    <div class="field full">
+      <strong>Tên đăng nhập: ${escapeHTML(username)}</strong>
+      <label>Mật khẩu mới</label>
+      <input id="issuedPassword" readonly
+             value="${escapeHTML(password)}">
+      <button type="button" class="btn primary"
+              id="copyIssuedPassword">
+        Sao chép mật khẩu
+      </button>
+      <p class="hint">
+        Hãy lưu lại và cấp riêng cho người dùng.
+        Mật khẩu sẽ không được hiển thị lại.
+      </p>
+    </div>
+  `;
+
+  $('copyIssuedPassword').onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(password);
+      $('copyIssuedPassword').textContent = 'Đã sao chép';
+    } catch {
+      $('issuedPassword').select();
+    }
+  };
+
+  $('saveButton').style.display = 'none';
+  $('modalBackdrop').classList.add('show');
+}
+
+async function saveAccount() {
+  const form = new FormData($('editForm'));
+  const role = String(form.get('role'));
+
+  const payload = {
+    username: String(form.get('username') || '').trim(),
+    role,
+    student_id: role === 'student' ? form.get('student_id') : null,
+    teacher_id: role === 'teacher' ? form.get('teacher_id') : null
+  };
+
+  if (!editingId) {
+    payload.password = form.get('password');
+  }
+
+  $('saveButton').disabled = true;
+
+  try {
+    const wasEditing = Boolean(editingId);
+
+    const result = await request(
+      '/api/accounts' + (editingId ? '/' + editingId : ''),
+      {
+        method: editingId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    closeForm();
+    await load();
+
+    notify(result.message || 'Đã lưu tài khoản.');
+
+    if (!wasEditing && result.temporary_password) {
+      showIssuedPassword(payload.username, result.temporary_password);
+    }
+
+  } catch (error) {
+    notify(error.message, true);
+  } finally {
+    $('saveButton').disabled = false;
+  }
+}
+
+async function resetAccountPassword(id) {
+  const item = records.find(row => Number(row.id) === id);
+  if (!item) return;
+
+  if (!confirm(`Đặt lại mật khẩu cho ${item.username}?`)) return;
+
+  try {
+    const result = await request(
+      `/api/accounts/${id}/reset-password`,
+      { method: 'POST' }
+    );
+
+    notify('Đã đặt lại mật khẩu.');
+
+    if (result.temporary_password) {
+      showIssuedPassword(item.username, result.temporary_password);
+    }
+
+  } catch (error) {
+    notify(error.message, true);
+  }
+}
+
+async function toggleAccount(id) {
+  const item = records.find(row => Number(row.id) === id);
+  if (!item) return;
+
+  const enabled = Number(item.is_active) !== 1;
+
+  if (!confirm(
+    `${enabled ? 'Mở khóa' : 'Khóa'} tài khoản ${item.username}?`
+  )) return;
+
+  try {
+    await request(`/api/accounts/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_active: enabled ? 1 : 0 })
+    });
+
+    await load();
+    notify('Đã cập nhật trạng thái tài khoản.');
+
+  } catch (error) {
+    notify(error.message, true);
+  }
+}
+
+async function deleteAccount(id) {
+  const item = records.find(row => Number(row.id) === id);
+  if (!item) return;
+
+  if (!confirm(
+    `Xóa tài khoản ${item.username}?\nHồ sơ sinh viên/giáo viên sẽ được giữ lại.`
+  )) return;
+
+  try {
+    await request(`/api/accounts/${id}`, { method: 'DELETE' });
+    await load();
+    notify('Đã xóa tài khoản.');
+
+  } catch (error) {
+    notify(error.message, true);
+  }
+}
+
+// ========================================
+// SỰ KIỆN GIAO DIỆN
+// ========================================
+
+$('search').addEventListener('input', render);
+$('refreshButton').onclick = load;
+$('addButton').onclick = () => openForm();
+$('cancelButton').onclick = closeForm;
+$('editForm').onsubmit = saveRecord;
+$('logoutButton').onclick = logout;
+
+$('closeDetail').onclick = closeDetail;
+
+$('addGradeDetail').onclick = async () => {
+  const studentId = selectedGradeStudent;
+  closeDetail();
+  await openForm();
+
+  const select = $('formFields').querySelector('[name=student_id]');
+  if (select && studentId != null) {
+    select.value = String(studentId);
+  }
+};
+
+$('modalBackdrop').onclick = event => {
+  if (event.target === $('modalBackdrop')) closeForm();
+};
+
+$('detailBackdrop').onclick = event => {
+  if (event.target === $('detailBackdrop')) closeDetail();
+};
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    closeForm();
+    closeDetail();
+  }
+});
+
+// Khởi tạo ứng dụng
+initializeAdmin();
+
 </script>
-</body></html>
+</body>
+</html>
