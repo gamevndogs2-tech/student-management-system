@@ -80,11 +80,47 @@ services:
     networks:
       - backend_network
 
+  # ============================
+  # Prometheus Monitoring
+  # ============================
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - backend
+    networks:
+      - backend_network
+
+  # ============================
+  # Grafana Dashboard
+  # ============================
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - backend_network
+
 # ============================
 # Persistent Volumes
 # ============================
 volumes:
   mysql_data:
+  prometheus_data:
+  grafana_data:
 
 # ============================
 # Docker Networks

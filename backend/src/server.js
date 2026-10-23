@@ -11,6 +11,12 @@ const studentRoutes = require('./routes/studentRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
 const gradeRoutes = require('./routes/gradeRoutes');
 
+// Import Prometheus Metrics
+const {
+  metricsMiddleware,
+  metricsHandler
+} = require('./middleware/metrics');
+
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -18,6 +24,12 @@ const PORT = Number(process.env.PORT) || 3000;
 app.disable('x-powered-by');
 app.use(helmet());
 app.use(express.json());
+
+// Prometheus: Theo dõi HTTP requests
+app.use(metricsMiddleware);
+
+// Prometheus: Endpoint thu thập metrics
+app.get('/metrics', metricsHandler);
 
 // API quản lý lớp học
 app.use('/api/classes', classRoutes);
