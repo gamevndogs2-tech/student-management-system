@@ -1,52 +1,87 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hệ thống Quản lý Sinh viên</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      text-align: center;
-      padding: 80px 20px;
-    }
-    h1 { color: #1e40af; }
-    button {
-      padding: 12px 24px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    pre {
-      text-align: left;
-      max-width: 600px;
-      margin: 24px auto;
-      white-space: pre-wrap;
-    }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hệ thống Quản lý Sinh viên</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#243247;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}.layout{display:flex;min-height:100vh}.sidebar{width:235px;background:#203b63;color:white;padding:25px 15px;flex-shrink:0}.sidebar h2{font-size:19px;margin:0 10px 28px}.nav{display:block;width:100%;text-align:left;padding:13px 15px;border:0;border-radius:6px;background:none;color:#dbe7f5;cursor:pointer;margin:5px 0;font-size:14px}.nav.active,.nav:hover{background:#365b8c;color:white}.main{flex:1;min-width:0}.topbar{height:70px;background:white;border-bottom:1px solid #dfe6ef;display:flex;align-items:center;padding:0 30px;justify-content:space-between}.topbar strong{font-size:19px}.topbar span{font-size:13px;color:#718096}.content{padding:28px 30px;max-width:1450px;margin:auto}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.heading h1{font-size:23px;margin:0}.heading p{color:#68778b;margin:7px 0 0;font-size:14px}.card{background:white;border:1px solid #e1e7ef;border-radius:9px;padding:20px;box-shadow:0 2px 8px #203b6309}.toolbar{display:flex;gap:10px;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap}input,select{border:1px solid #cdd7e4;border-radius:5px;padding:10px 11px;font:inherit;font-size:14px;background:white;color:#25344b;min-width:0}input:focus,select:focus{outline:2px solid #a7c7f4;border-color:#3b73bc}.search{width:min(360px,100%)}button{font:inherit;cursor:pointer}.btn{border:1px solid #ccd7e5;background:#fff;color:#243247;padding:9px 14px;border-radius:5px;font-size:14px}.btn.primary{background:#2463ad;color:white;border-color:#2463ad}.btn.danger{color:#ba2931;border-color:#eac3c5}.btn:hover{filter:brightness(.96)}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px;white-space:nowrap}th,td{text-align:left;border-bottom:1px solid #e8edf3;padding:13px 12px}th{background:#f7f9fc;color:#50627a;font-weight:600}td.actions{display:flex;gap:7px}.muted{color:#758398}.message{display:none;padding:12px 14px;border-radius:5px;margin-bottom:16px;background:#e9f5ee;color:#20613e}.message.error{background:#fff0ef;color:#9d2929}.message.show{display:block}.empty{text-align:center;color:#78869a;padding:32px}.modal-backdrop{display:none;position:fixed;inset:0;background:#0c1d33a8;z-index:10;align-items:center;justify-content:center;padding:20px}.modal-backdrop.show{display:flex}.modal{background:white;border-radius:10px;width:min(560px,100%);max-height:90vh;overflow:auto;padding:24px}.modal h2{font-size:20px;margin:0 0 20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}.field.full{grid-column:1/-1}.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}.detail-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.detail-heading h2{margin:0;font-size:19px}.detail-modal{width:min(850px,100%)}.detail-actions{display:flex;gap:7px}.gpa-summary{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.gpa-box{background:#f3f6fa;border:1px solid #e1e7ef;border-radius:7px;padding:13px 17px;min-width:155px}.gpa-box small{display:block;color:#65768b;margin-bottom:7px}.gpa-box strong{font-size:21px;color:#203b63}.hint{font-size:12px;color:#6b7c90;margin-top:14px}@media(max-width:800px){.layout{display:block}.sidebar{width:100%;padding:12px}.sidebar h2{margin:4px 5px 10px}.sidebar nav{display:flex;overflow:auto;gap:6px}.nav{white-space:nowrap;width:auto}.topbar{padding:0 16px}.content{padding:20px 12px}.form-grid{grid-template-columns:1fr}.heading{align-items:flex-start}}
+</style>
 </head>
 <body>
-  <h1>Hệ thống Quản lý Sinh viên</h1>
-  <p>Nginx Reverse Proxy đã phục vụ giao diện thành công.</p>
-
-  <button onclick="testAPI()">Kiểm tra kết nối Backend</button>
-  <pre id="result"></pre>
-
-  <script>
-    async function testAPI() {
-      const result = document.getElementById('result');
-      try {
-        const response = await fetch('/api/health');
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const data = await response.json();
-        result.textContent = JSON.stringify(data, null, 2);
-      } catch (error) {
-        result.textContent = 'Lỗi: ' + error.message;
-      }
-    }
-  </script>
-</body>
-</html>
+<div class="layout"><aside class="sidebar"><h2>Quản lý Sinh viên</h2><nav id="navigation"></nav></aside><div class="main"><header class="topbar"><strong>HỆ THỐNG QUẢN LÝ SINH VIÊN</strong><span>Trang quản trị</span></header><main class="content"><div class="heading"><div><h1 id="pageTitle">Sinh viên</h1><p id="pageSubtitle">Quản lý dữ liệu hệ thống</p></div><button class="btn primary" id="addButton">+ Thêm mới</button></div><div class="message" id="message" role="status"></div><section class="card"><div class="toolbar"><input id="search" class="search" type="search" placeholder="Tìm kiếm trong danh sách..."><button class="btn" id="refreshButton">Làm mới</button></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div><p class="hint" id="recordCount"></p></section></main></div></div>
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle">Thêm mới</h2><form id="editForm"><div class="form-grid" id="formFields"></div><div class="modal-footer"><button type="button" class="btn" id="cancelButton">Hủy</button><button type="submit" class="btn primary" id="saveButton">Lưu thông tin</button></div></form></div></div>
+<div class="modal-backdrop" id="detailBackdrop"><div class="modal detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><div class="detail-heading"><h2 id="detailTitle">Bảng điểm sinh viên</h2><button class="btn" id="closeDetail">Đóng</button></div><div class="table-wrap"><table><thead><tr><th>Môn học</th><th>Điểm quá trình</th><th>Điểm thi</th><th>Tổng kết</th><th>Điểm chữ</th><th>GPA môn</th><th>Thao tác</th></tr></thead><tbody id="detailBody"></tbody></table></div><div class="gpa-summary" id="gpaSummary"></div><p class="hint">Quy tắc demo: tổng kết = 40% quá trình + 60% thi; quy đổi hệ 4 theo bảng điểm mẫu, GPA trung bình có trọng số tín chỉ. Không thay thế quy chế chính thức của trường.</p><div class="modal-footer"><button class="btn primary" id="addGradeDetail">+ Thêm điểm</button></div></div></div>
+<script>
+'use strict';
+const configs={
+ students:{title:'Sinh viên',subtitle:'Danh sách và thông tin sinh viên',api:'/api/students',columns:[['student_code','Mã sinh viên'],['full_name','Họ và tên'],['date_of_birth','Ngày sinh'],['gender','Giới tính'],['email','Email'],['class_name','Lớp']],fields:[['student_code','Mã sinh viên','text',true],['full_name','Họ và tên','text',true],['date_of_birth','Ngày sinh','date'],['gender','Giới tính','gender'],['email','Email','email'],['class_id','Lớp','classes']]},
+ classes:{title:'Lớp học',subtitle:'Danh sách các lớp học',api:'/api/classes',columns:[['class_code','Mã lớp'],['class_name','Tên lớp'],['academic_year','Niên khóa']],fields:[['class_code','Mã lớp','text',true],['class_name','Tên lớp','text',true],['academic_year','Niên khóa','text']]},
+ subjects:{title:'Môn học',subtitle:'Danh sách các môn học',api:'/api/subjects',columns:[['subject_code','Mã môn'],['subject_name','Tên môn học'],['credits','Số tín chỉ']],fields:[['subject_code','Mã môn','text',true],['subject_name','Tên môn học','text',true],['credits','Số tín chỉ','number',true]]},
+ grades:{title:'Điểm số',subtitle:'Kết quả học tập của sinh viên',api:'/api/grades',columns:[['student_code','Mã sinh viên'],['full_name','Họ và tên'],['subject_name','Môn học'],['process_score','Điểm quá trình'],['exam_score','Điểm thi']],fields:[['student_id','Sinh viên','students'],['subject_id','Môn học','subjects'],['process_score','Điểm quá trình','score'],['exam_score','Điểm thi','score']]}
+};
+let active='students',records=[],editingId=null,lookup={classes:[],students:[],subjects:[]};
+const $=id=>document.getElementById(id);
+const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const config=()=>configs[active];
+function notify(text,error=false){const el=$('message');el.textContent=text;el.className='message show'+(error?' error':'');}
+async function request(url,options={}){let response;try{response=await fetch(url,options)}catch{throw new Error('Không kết nối được máy chủ.')}let data;try{data=await response.json()}catch{throw new Error('Máy chủ trả về dữ liệu không hợp lệ.')}if(!response.ok||data.success===false)throw new Error(data.message||`Lỗi HTTP ${response.status}`);return data;}
+function extract(data){return Array.isArray(data)?data:Array.isArray(data.data)?data.data:[];}
+async function loadLookup(key){if(lookup[key].length)return lookup[key];const data=await request(configs[key].api);lookup[key]=extract(data);return lookup[key];}
+function nav(){const labels={students:'Sinh viên',classes:'Lớp học',subjects:'Môn học',grades:'Điểm số'};$('navigation').innerHTML=Object.entries(labels).map(([key,label])=>`<button class="nav ${active===key?'active':''}" data-key="${key}">${label}</button>`).join('');document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>switchTab(b.dataset.key));}
+async function switchTab(key){active=key;$('message').className='message';$('search').value='';$('pageTitle').textContent=config().title;$('pageSubtitle').textContent=config().subtitle;nav();await load();}
+function formatValue(key,value){if(value===null||value===undefined||value==='')return '—';if(key==='date_of_birth'){const date=new Date(value);return Number.isNaN(date.getTime())?String(value):date.toLocaleDateString('vi-VN',{timeZone:'UTC'});}return String(value);}
+function render(){
+ if(active==='grades'){renderGradeStudents();return;}
+ const {columns}=config();$('tableHead').innerHTML='<tr>'+columns.map(([,label])=>`<th>${escapeHTML(label)}</th>`).join('')+'<th>Thao tác</th></tr>';
+ const term=$('search').value.trim().toLocaleLowerCase('vi');const filtered=records.filter(item=>Object.values(item).some(v=>String(v??'').toLocaleLowerCase('vi').includes(term)));
+ $('tableBody').innerHTML=filtered.length?filtered.map(item=>'<tr>'+columns.map(([key])=>`<td>${escapeHTML(formatValue(key,item[key]))}</td>`).join('')+`<td class="actions"><button class="btn" data-edit="${item.id}">Sửa</button><button class="btn danger" data-delete="${item.id}">Xóa</button></td></tr>`).join(''):`<tr><td class="empty" colspan="${columns.length+1}">Không có dữ liệu phù hợp</td></tr>`;
+ $('recordCount').textContent=`Hiển thị ${filtered.length}/${records.length} bản ghi`;
+ document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openForm(Number(b.dataset.edit)));
+ document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>deleteRecord(Number(b.dataset.delete)));
+}
+function renderGradeStudents(){
+ const grouped=new Map();
+ for(const grade of records){const id=Number(grade.student_id);if(!grouped.has(id))grouped.set(id,{id,code:grade.student_code,name:grade.full_name,grades:[]});grouped.get(id).grades.push(grade);}
+ const students=[...grouped.values()].sort((a,b)=>String(a.code).localeCompare(String(b.code),'vi'));
+ const term=$('search').value.trim().toLocaleLowerCase('vi');const filtered=students.filter(s=>[s.code,s.name,...s.grades.map(g=>g.subject_name)].some(v=>String(v??'').toLocaleLowerCase('vi').includes(term)));
+ $('tableHead').innerHTML='<tr><th>Mã sinh viên</th><th>Họ và tên</th><th>Số môn có điểm</th><th>Thao tác</th></tr>';
+ $('tableBody').innerHTML=filtered.length?filtered.map(s=>`<tr><td>${escapeHTML(s.code)}</td><td>${escapeHTML(s.name)}</td><td>${s.grades.length}</td><td><button class="btn primary" data-view-student="${s.id}">Xem điểm</button></td></tr>`).join(''):'<tr><td class="empty" colspan="4">Không có dữ liệu phù hợp</td></tr>';
+ $('recordCount').textContent=`Hiển thị ${filtered.length}/${students.length} sinh viên có điểm (${records.length} bản ghi điểm)`;
+ document.querySelectorAll('[data-view-student]').forEach(b=>b.onclick=async()=>{try{await loadLookup('subjects');showStudentGrades(Number(b.dataset.viewStudent));}catch(e){notify('Không tải được tín chỉ môn học: '+e.message,true);}});
+}
+// Quy đổi GPA dùng cho mục đích minh họa, không phải quy chế chính thức.
+function gradeResult(g){
+ const process=Number(g.process_score),exam=Number(g.exam_score);
+ if(g.process_score==null||g.exam_score==null||!Number.isFinite(process)||!Number.isFinite(exam))return null;
+ const total=process*.4+exam*.6;
+ const rounded=Math.round((total+Number.EPSILON)*100)/100;
+ const bands=[[8.5,'A',4],[8,'B+',3.5],[7,'B',3],[6.5,'C+',2.5],[5.5,'C',2],[5,'D+',1.5],[4,'D',1],[0,'F',0]];
+ const band=bands.find(([min])=>rounded>=min);
+ return {total:rounded,letter:band[1],gpa:band[2]};
+}
+let selectedGradeStudent=null;
+function showStudentGrades(studentId){
+ selectedGradeStudent=studentId;
+ const grades=records.filter(g=>Number(g.student_id)===studentId);
+ if(!grades.length)return;
+ $('detailTitle').textContent=`Bảng điểm — ${grades[0].full_name} (${grades[0].student_code})`;
+ const calculated=grades.map(g=>({grade:g,result:gradeResult(g),subject:lookup.subjects.find(s=>Number(s.id)===Number(g.subject_id))}));
+ $('detailBody').innerHTML=calculated.map(({grade:g,result:r})=>`<tr><td>${escapeHTML(g.subject_name)}</td><td>${escapeHTML(formatValue('process_score',g.process_score))}</td><td>${escapeHTML(formatValue('exam_score',g.exam_score))}</td><td>${r?r.total.toFixed(2):'—'}</td><td>${r?r.letter:'—'}</td><td>${r?r.gpa.toFixed(2):'—'}</td><td><div class="detail-actions"><button class="btn" data-grade-edit="${g.id}">Sửa</button><button class="btn danger" data-grade-delete="${g.id}">Xóa</button></div></td></tr>`).join('');
+ let credits=0,weightedGpa=0,weightedTotal=0;
+ for(const {result:r,subject} of calculated){const c=Number(subject?.credits);if(r&&Number.isFinite(c)&&c>0){credits+=c;weightedGpa+=r.gpa*c;weightedTotal+=r.total*c;}}
+ $('gpaSummary').innerHTML=`<div class="gpa-box"><small>Điểm trung bình hệ 10</small><strong>${credits?(weightedTotal/credits).toFixed(2):'—'}</strong></div><div class="gpa-box"><small>GPA hệ 4</small><strong>${credits?(weightedGpa/credits).toFixed(2):'—'} / 4.00</strong></div><div class="gpa-box"><small>Tín chỉ đã tính</small><strong>${credits}</strong></div>`;
+ $('detailBackdrop').classList.add('show');
+ document.querySelectorAll('[data-grade-edit]').forEach(b=>b.onclick=()=>{closeDetail();openForm(Number(b.dataset.gradeEdit));});
+ document.querySelectorAll('[data-grade-delete]').forEach(b=>b.onclick=async()=>{closeDetail();await deleteRecord(Number(b.dataset.gradeDelete));});
+}
+function closeDetail(){$('detailBackdrop').classList.remove('show');}
+async function load(){try{const data=await request(config().api);records=extract(data);render();}catch(error){records=[];render();notify(error.message,true);}}
+function optionsFor(type){if(type==='gender')return [['Nam','Nam'],['Nữ','Nữ'],['Khác','Khác']];if(type==='classes')return lookup.classes.map(x=>[x.id,`${x.class_code} - ${x.class_name}`]);if(type==='students')return lookup.students.map(x=>[x.id,`${x.student_code} - ${x.full_name}`]);if(type==='subjects')return lookup.subjects.map(x=>[x.id,`${x.subject_code} - ${x.subject_name}`]);return [];}
+function normalizeDate(value){if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?String(value).slice(0,10):d.toISOString().slice(0,10);}
+async function openForm(id=null){editingId=id;const item=records.find(x=>x.id===id)||{};try{const types=config().fields.map(f=>f[2]).filter(t=>['classes','students','subjects'].includes(t));await Promise.all(types.map(loadLookup));}catch(e){notify('Không tải được dữ liệu lựa chọn: '+e.message,true);return;}$('modalTitle').textContent=(id?'Cập nhật ':'Thêm ')+config().title.toLowerCase();$('formFields').innerHTML=config().fields.map(([key,label,type,required])=>{let val=item[key]??'';if(type==='date')val=normalizeDate(val);let control;if(['gender','classes','students','subjects'].includes(type)){const opts=optionsFor(type);control=`<select name="${key}" ${required?'required':''}><option value="">-- Chọn ${escapeHTML(label.toLowerCase())} --</option>${opts.map(([v,text])=>`<option value="${escapeHTML(v)}" ${String(v)===String(val)?'selected':''}>${escapeHTML(text)}</option>`).join('')}</select>`;}else{control=`<input name="${key}" type="${type==='score'?'number':type}" value="${escapeHTML(val)}" ${required?'required':''} ${type==='score'?'min="0" max="10" step="0.01"':type==='number'?'min="1" step="1"':''}>`;}return `<label class="field">${escapeHTML(label)}${control}</label>`;}).join('');$('modalBackdrop').classList.add('show');}
+function closeForm(){$('modalBackdrop').classList.remove('show');}
+async function saveRecord(event){event.preventDefault();const payload={};for(const [key,,type] of config().fields){const value=new FormData($('editForm')).get(key);payload[key]=value===''?null:['classes','students','subjects','number','score'].includes(type)?Number(value):value;}$('saveButton').disabled=true;try{await request(config().api+(editingId?'/'+editingId:''),{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});closeForm();lookup={classes:[],students:[],subjects:[]};await load();notify(editingId?'Cập nhật thành công.':'Thêm mới thành công.');}catch(e){notify(e.message,true);closeForm();}finally{$('saveButton').disabled=false;}}
+async function deleteRecord(id){if(!confirm('Bạn có chắc chắn muốn xóa bản ghi này? Dữ liệu liên quan có thể bị ảnh hưởng.'))return;try{await request(config().api+'/'+id,{method:'DELETE'});lookup={classes:[],students:[],subjects:[]};await load();notify('Xóa thành công.');}catch(e){notify(e.message,true);}}
+$('closeDetail').onclick=closeDetail;$('detailBackdrop').onclick=e=>{if(e.target===$('detailBackdrop'))closeDetail();};$('addGradeDetail').onclick=async()=>{const studentId=selectedGradeStudent;closeDetail();await openForm();const select=$('formFields').querySelector('[name=student_id]');if(select&&studentId!==null)select.value=String(studentId);};$('search').addEventListener('input',render);$('refreshButton').onclick=load;$('addButton').onclick=()=>openForm();$('cancelButton').onclick=closeForm;$('modalBackdrop').onclick=e=>{if(e.target===$('modalBackdrop'))closeForm();};$('editForm').onsubmit=saveRecord;document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeForm();closeDetail();}});switchTab('students');
+</script>
+</body></html>
