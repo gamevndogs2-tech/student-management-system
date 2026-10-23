@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bảng điểm sinh viên</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#243247}
+header{
+  background:#203b63;color:white;padding:18px 30px;
+  display:flex;justify-content:space-between;align-items:center
+}
+header strong{font-size:18px}
+button{padding:9px 14px;border:1px solid #cdd7e4;border-radius:5px;cursor:pointer}
+main{max-width:1100px;margin:30px auto;padding:0 20px}
+h1{font-size:24px}
+.card{
+  background:white;border:1px solid #e1e7ef;border-radius:9px;
+  padding:22px;margin:20px 0
+}
+.info{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.info div{padding:12px;background:#f7f9fc;border-radius:6px}
+small{display:block;color:#718096;margin-bottom:7px}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:13px;text-align:left;border-bottom:1px solid #e8edf3}
+th{background:#f7f9fc}
+.scroll{overflow:auto}
+.summary{display:flex;gap:14px;flex-wrap:wrap}
+.summary div{background:#f3f6fa;padding:18px;border-radius:7px;min-width:160px}
+.summary strong{font-size:23px;color:#203b63}
+.hint{font-size:12px;color:#718096}
+@media(max-width:600px){.info{grid-template-columns:1fr}header{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+  <strong>🎓 Cổng thông tin Sinh viên</strong>
+  <button id="logout">Đăng xuất</button>
+</header>
+
+<main>
+  <h1>Thông tin và kết quả học tập</h1>
+
+  <section class="card">
+    <h2>Thông tin cá nhân</h2>
+    <div class="info" id="profile">Đang tải...</div>
+  </section>
+
+  <section class="card">
+    <h2>Bảng điểm</h2>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Môn học</th>
+            <th>Tín chỉ</th>
+            <th>Quá trình</th>
+            <th>Thi</th>
+            <th>Tổng kết</th>
+            <th>Điểm chữ</th>
+            <th>GPA</th>
+          </tr>
+        </thead>
+        <tbody id="grades"></tbody>
+      </table>
+    </div>
+    <div class="summary" id="summary"></div>
+    <p class="hint">
+      Quy tắc demo: 40% quá trình + 60% thi.
+      GPA được tính theo tín chỉ, dùng thang quy đổi mẫu.
+    </p>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = v => String(v ?? '').replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function calculate(g) {
+  if (g.process_score == null || g.exam_score == null) return null;
+  const total = Math.round(
+    (Number(g.process_score)*0.4 + Number(g.exam_score)*0.6)*100
+  )/100;
+  const bands = [
+    [8.5,'A',4],[8,'B+',3.5],[7,'B',3],
+    [6.5,'C+',2.5],[5.5,'C',2],[5,'D+',1.5],
+    [4,'D',1],[0,'F',0]
+  ];
+  const band = bands.find(b => total >= b[0]);
+  return {total, letter:band[1], gpa:band[2]};
+}
+
+async function load() {
+  try {
+    const res = await fetch('/api/student/me', {
+      credentials:'same-origin'
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      location.replace('/login.html');
+      return;
+    }
+    if (!res.ok) throw new Error('Không tải được dữ liệu sinh viên');
+
+    const data = await res.json();
+    const student = data.student;
+    const grades = data.grades || [];
+
+    $('profile').innerHTML = [
+      ['Mã sinh viên',student.student_code],
+      ['Họ và tên',student.full_name],
+      ['Lớp',student.class_name],
+      ['Email',student.email]
+    ].map(([label,value]) =>
+      `<div><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`
+    ).join('');
+
+    let credits=0, total10=0, total4=0;
+
+    $('grades').innerHTML = grades.map(g => {
+      const r=calculate(g);
+      const c=Number(g.credits)||0;
+
+      if(r && c>0){
+        credits+=c;
+        total10+=r.total*c;
+        total4+=r.gpa*c;
+      }
+
+      return `<tr>
+        <td>${esc(g.subject_name)}</td>
+        <td>${esc(c)}</td>
+        <td>${esc(g.process_score)}</td>
+        <td>${esc(g.exam_score)}</td>
+        <td>${r?r.total.toFixed(2):'—'}</td>
+        <td>${r?r.letter:'—'}</td>
+        <td>${r?r.gpa.toFixed(2):'—'}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="7">Chưa có điểm</td></tr>';
+
+    $('summary').innerHTML = `
+      <div><small>Trung bình hệ 10</small>
+        <strong>${credits?(total10/credits).toFixed(2):'—'}</strong></div>
+      <div><small>GPA hệ 4</small>
+        <strong>${credits?(total4/credits).toFixed(2):'—'}</strong></div>
+      <div><small>Tín chỉ đã tính</small>
+        <strong>${credits}</strong></div>`;
+  } catch(e) {
+    $('profile').textContent=e.message;
+  }
+}
+
+$('logout').onclick = async () => {
+  try {
+    await fetch('/api/auth/logout',{
+      method:'POST',credentials:'same-origin'
+    });
+  } finally {
+    location.replace('/login.html');
+  }
+};
+
+load();
+</script>
+</body>
+</html>
